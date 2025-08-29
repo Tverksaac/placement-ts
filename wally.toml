@@ -1,0 +1,10 @@
+[package]
+name = "admin/placement-ts"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+
+[server-dependencies]
+profile-store = "artisticvampyre/profile-store@1.0.0"
