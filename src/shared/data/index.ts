@@ -53,6 +53,9 @@ export class Data implements OnInit {
 
 	GetProfile(player: Player): Promise<ProfileStore.Profile<Template>> {
 		return new Promise((resolve, reject) => {
+			if (!player) {
+				reject("player wasn's provided!");
+			}
 			const profile = Profiles[player.UserId];
 			if (profile) {
 				resolve(profile);
@@ -60,5 +63,16 @@ export class Data implements OnInit {
 				reject("can't get " + player.Name + "'s profile!");
 			}
 		});
+	}
+
+	GetData(player: Player): Promise<ProfileStore.Profile<Template>["Data"]> {
+		return this.GetProfile(player).then(
+			(profile) => {
+				return profile.Data;
+			},
+			(reason) => {
+				throw error(reason);
+			},
+		);
 	}
 }

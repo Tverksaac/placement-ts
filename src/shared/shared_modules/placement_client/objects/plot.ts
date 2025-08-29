@@ -31,15 +31,19 @@ function create_from_vector2(size: Vector2, pos: Vector3) {
 }
 
 export class Plot {
-	constructor(Parameters: PlotParameters) {
-		let plot = undefined;
+	player: Player;
+	plot: Part;
+
+	constructor(Player: Player, Parameters: PlotParameters) {
+		this.player = Player;
+
 		if (Parameters.Reference) {
-			plot = create_from_reference(Parameters.Reference);
+			this.plot = create_from_reference(Parameters.Reference);
 		} else if (Parameters.Position && Parameters.Size) {
-			plot = create_from_vector2(Parameters.Size, Parameters.Position);
+			this.plot = create_from_vector2(Parameters.Size, Parameters.Position);
 		} else {
 			throw error("Plot Parameteres was wrongly defined!", 1);
 		}
-		return plot;
+		return this;
 	}
 }
