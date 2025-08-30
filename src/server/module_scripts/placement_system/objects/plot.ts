@@ -1,8 +1,17 @@
+import ProfileStore, { DataStoreState } from "@rbxts/profile-store";
+import { Data } from "server/services/data";
+
+const data_service = new Data();
+
 export interface PlotParameters {
+	id: number;
+
 	Size?: Vector2;
 	Position?: Vector3;
 	//OR
 	Reference?: Part;
+
+	override?: boolean;
 }
 function apply_texture(to: Part) {
 	const texture = new Instance("Texture");
@@ -33,9 +42,11 @@ function create_from_vector2(size: Vector2, pos: Vector3) {
 export class Plot {
 	player: Player;
 	plot: Part;
+	id: number;
 
 	constructor(Player: Player, Parameters: PlotParameters) {
 		this.player = Player;
+		this.id = Parameters.id;
 
 		if (Parameters.Reference) {
 			this.plot = create_from_reference(Parameters.Reference);
@@ -44,6 +55,17 @@ export class Plot {
 		} else {
 			throw error("Plot Parameteres was wrongly defined!", 1);
 		}
+
+		data_service.LoadPlayerProfileGlobal(this.player).andThen((profile) => {
+			const data = profile.Data;
+			const plot = data.Plots[this.id];
+			if ((plot && Parameters.override) || !plot) {
+				data.Plots[this.id] = {
+					Furniture: [],
+				};
+			}
+		});
+
 		return this;
 	}
 }

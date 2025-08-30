@@ -75,4 +75,15 @@ export class Data implements OnInit {
 			},
 		);
 	}
+
+	LoadPlayerProfileGlobal(player: Player): Promise<ProfileStore.Profile<Template>> {
+		return new Promise((resolve, reject) => {
+			const profile = profile_store.GetAsync("player_" + player.UserId);
+			if (profile) {
+				resolve(profile);
+			} else {
+				reject("no profile for " + player.Name);
+			}
+		});
+	}
 }

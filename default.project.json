@@ -30,12 +30,6 @@
 				"$path": "out/shared"
 			},
 			"Assets": {
-				"$className": "Folder"
-			}
-		},
-		"ServerStorage": {
-			"$className": "ServerStorage",
-			"Assets": {
 				"$className": "Folder",
 				"BuildingAssets": {
 					"$className": "Folder",
@@ -44,6 +38,9 @@
 					}
 				}
 			}
+		},
+		"ServerStorage": {
+			"$className": "ServerStorage"
 		},
 		"StarterPlayer": {
 			"$className": "StarterPlayer",

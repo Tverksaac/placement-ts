@@ -20,7 +20,7 @@ function snap_value(pos: number): number {
 }
 
 function find_object_by_name(object_name: string): Instance | void {
-	for (const instance of ServerStorage.Assets.BuildingAssets.GetDescendants()) {
+	for (const instance of ReplicatedStorage.Assets.BuildingAssets.GetDescendants()) {
 		if (instance.Name === object_name) {
 			return instance;
 		}
@@ -56,4 +56,6 @@ function glow_model(object: Model, color: Color3) {
 	});
 }
 
-export class Editor {}
+export class Editor {
+	constructor() {}
+}

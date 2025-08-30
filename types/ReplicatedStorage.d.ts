@@ -1,4 +1,4 @@
-interface ServerStorage extends Instance {
+interface ReplicatedStorage extends Instance {
 	Assets: Folder & {
 		BuildingAssets: Folder & {
 			Furniture: Folder & {
