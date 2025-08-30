@@ -1,4 +1,4 @@
-import { Players, ReplicatedStorage, UserInputService, Workspace } from "@rbxts/services";
+import { Players, ReplicatedStorage, ServerStorage, UserInputService, Workspace } from "@rbxts/services";
 import { placement_settings } from "./placement_settings";
 import { placement_actions } from "./placement_actions";
 import { placement_config } from "./placement_config";
@@ -20,7 +20,7 @@ function snap_value(pos: number): number {
 }
 
 function find_object_by_name(object_name: string): Instance | void {
-	for (const instance of ReplicatedStorage.Assets.BuildingAssets.GetDescendants()) {
+	for (const instance of ServerStorage.Assets.BuildingAssets.GetDescendants()) {
 		if (instance.Name === object_name) {
 			return instance;
 		}

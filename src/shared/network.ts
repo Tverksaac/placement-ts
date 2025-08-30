@@ -1,18 +1,19 @@
 import { Networking } from "@flamework/networking";
 import ProfileStore from "@rbxts/profile-store";
-import { Template } from "./data/template";
 
 interface ClientToServerEvents {
-	Place(): void;
+	Building: {
+		Place(): void;
+	};
 }
 
 interface ServerToClientEvents {
-	ProfileLoaded(player: Player): void;
+	Data: {
+		ProfileLoaded(player: Player): void;
+	};
 }
 
-interface ClientToServerFunctions {
-	RequestData(player: Player): ProfileStore.Profile<Template>["Data"];
-}
+interface ClientToServerFunctions {}
 
 interface ServerToClientFunctions {}
 

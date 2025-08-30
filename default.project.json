@@ -28,6 +28,9 @@
 			},
 			"TS": {
 				"$path": "out/shared"
+			},
+			"Assets": {
+				"$className": "Folder"
 			}
 		},
 		"ServerStorage": {
