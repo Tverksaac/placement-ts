@@ -1,5 +1,6 @@
 import ProfileStore, { DataStoreState } from "@rbxts/profile-store";
-import { Data } from "server/services/data";
+import { Data } from "shared/shared_modules/data";
+import { Template } from "shared/shared_modules/data/template";
 
 const data_service = new Data();
 
@@ -56,7 +57,7 @@ export class Plot {
 			throw error("Plot Parameteres was wrongly defined!", 1);
 		}
 
-		data_service.LoadPlayerProfileGlobal(this.player).andThen((profile) => {
+		data_service.LoadPlayerProfileGlobal(this.player).andThen((profile: ProfileStore.Profile<Template>) => {
 			const data = profile.Data;
 			const plot = data.Plots[this.id];
 			if ((plot && Parameters.override) || !plot) {

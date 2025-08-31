@@ -1,4 +1,4 @@
-import { Plot } from "server/module_scripts/placement_system/objects/plot";
+import { Plot } from "shared/shared_modules/placement_client/objects/plot";
 import { Data } from "..";
 
 const data_service = new Data();

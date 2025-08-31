@@ -2,6 +2,9 @@ import { Players, ReplicatedStorage, ServerStorage, UserInputService, Workspace 
 import { placement_settings } from "./placement_settings";
 import { placement_actions } from "./placement_actions";
 import { placement_config } from "./placement_config";
+import { Plot } from "./objects/plot";
+
+type PlacementObject = Model & { Area: Part };
 
 const ACTIONS = placement_actions;
 const settings = placement_settings;
@@ -19,9 +22,12 @@ function snap_value(pos: number): number {
 	return pos;
 }
 
-function find_object_by_name(object_name: string): Instance | void {
-	for (const instance of ReplicatedStorage.Assets.BuildingAssets.GetDescendants()) {
+function find_object_by_name(object_name: string): PlacementObject | void {
+	let i = 0;
+	for (const instance of ReplicatedStorage.Assets.BuildingAssets.GetDescendants() as [PlacementObject]) {
+		i++;
 		if (instance.Name === object_name) {
+			print("Object found after " + i + " iterations");
 			return instance;
 		}
 	}
@@ -41,6 +47,14 @@ function get_mouse_position_snapped(): Vector3 | void {
 	return new Vector3(snap_value(result.Position.X), math.ceil(result.Position.Y), snap_value(result.Position.Z));
 }
 
+function check_overlaps(check_in: Part, exclude: Instance[]) {
+	const params = new OverlapParams();
+	params.FilterDescendantsInstances = exclude;
+	params.FilterType = Enum.RaycastFilterType.Exclude;
+
+	return Workspace.GetPartsInPart(check_in, params);
+}
+
 function iterate_through_model(iter_object: Model, callback: Callback) {
 	for (const descendant of iter_object.GetDescendants()) {
 		if (config.allowed_parts.includes(descendant.ClassName)) {
@@ -57,5 +71,53 @@ function glow_model(object: Model, color: Color3) {
 }
 
 export class Editor {
-	constructor() {}
+	observing_object: PlacementObject | undefined;
+	plot: Plot;
+
+	constructor(Plot: Plot) {
+		this.observing_object = undefined;
+		this.plot = Plot;
+
+		const new_filter: Part[] = [];
+		new_filter.push(this.plot.plot);
+		settings.filter = new_filter;
+	}
+
+	AddObj(object_name: string) {
+		let object = find_object_by_name(object_name);
+
+		if (!object) {
+			warn("Cant find this object: " + object_name);
+			return;
+		}
+
+		object = object.Clone();
+		object.Parent = this.plot.plot;
+
+		this.observing_object = object;
+	}
+
+	EditObj(obj: Model) {
+		while (this.observing_object) {
+			const mouse_pos = get_mouse_position_snapped();
+
+			if (mouse_pos) {
+				this.observing_object.PivotTo(new CFrame(mouse_pos));
+			} else {
+				continue;
+			}
+
+			const overlaps = check_overlaps(this.observing_object.Area, [this.observing_object, this.plot.plot]);
+
+			if (overlaps.isEmpty()) {
+				glow_model(this.observing_object, new Color3(0.37, 1, 0.22));
+			} else {
+				glow_model(this.observing_object, new Color3(1, 0.29, 0.29));
+			}
+		}
+	}
+
+	Stop() {
+		this.observing_object = undefined;
+	}
 }
