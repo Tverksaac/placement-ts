@@ -6,5 +6,5 @@ export const placement_settings = {
 	min_placement_distance: 0,
 	observe_new_object: true,
 
-	filter: [new Instance("Part")],
+	filter: [] as Instance[],
 };

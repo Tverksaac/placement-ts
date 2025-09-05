@@ -38,7 +38,11 @@ function get_mouse_position_snapped(): Vector3 | void {
 	ray_params.FilterType = Enum.RaycastFilterType.Include;
 	ray_params.FilterDescendantsInstances = settings.filter;
 
-	const result = Workspace.Raycast(mouse.UnitRay.Origin, mouse.UnitRay.Direction.mul(100), ray_params);
+	const result = Workspace.Raycast(
+		mouse.UnitRay.Origin,
+		mouse.UnitRay.Direction.mul(settings.max_placement_distance),
+		ray_params,
+	);
 
 	if (!result) {
 		return;
@@ -71,16 +75,16 @@ function glow_model(object: Model, color: Color3) {
 }
 
 export class Editor {
-	observing_object: PlacementObject | undefined;
+	private observing_object: PlacementObject | undefined;
 	plot: Plot;
 
 	constructor(Plot: Plot) {
 		this.observing_object = undefined;
 		this.plot = Plot;
 
-		const new_filter: Part[] = [];
+		const new_filter: Instance[] = [];
 		new_filter.push(this.plot.plot);
-		settings.filter = new_filter;
+		settings.filter = new_filter as Part[];
 	}
 
 	AddObj(object_name: string) {
@@ -95,28 +99,38 @@ export class Editor {
 		object.Parent = this.plot.plot;
 
 		this.observing_object = object;
-	}
 
-	EditObj(obj: Model) {
-		while (this.observing_object) {
-			const mouse_pos = get_mouse_position_snapped();
-
-			if (mouse_pos) {
-				this.observing_object.PivotTo(new CFrame(mouse_pos));
-			} else {
-				continue;
-			}
-
-			const overlaps = check_overlaps(this.observing_object.Area, [this.observing_object, this.plot.plot]);
-
-			if (overlaps.isEmpty()) {
-				glow_model(this.observing_object, new Color3(0.37, 1, 0.22));
-			} else {
-				glow_model(this.observing_object, new Color3(1, 0.29, 0.29));
-			}
+		if (settings.observe_new_object) {
+			this.EditObj();
 		}
 	}
 
+	EditObj() {
+		task.spawn(() => {
+			while (this.observing_object) {
+				task.wait(0.05);
+				const mouse_pos = get_mouse_position_snapped();
+				print(this.observing_object.Area, [this.observing_object, this.plot.plot]);
+				const overlaps = check_overlaps(this.observing_object.Area, [
+					this.observing_object,
+					this.plot.plot,
+					this.plot.player.Character || this.plot.player.CharacterAdded.Wait()[0],
+				]);
+
+				if (overlaps.isEmpty()) {
+					glow_model(this.observing_object, new Color3(0.37, 1, 0.22));
+				} else {
+					glow_model(this.observing_object, new Color3(1, 0.29, 0.29));
+				}
+
+				if (mouse_pos) {
+					this.observing_object.PivotTo(new CFrame(mouse_pos));
+				} else {
+					continue;
+				}
+			}
+		});
+	}
 	Stop() {
 		this.observing_object = undefined;
 	}

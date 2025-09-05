@@ -1,19 +1,14 @@
 import { Networking } from "@flamework/networking";
-import ProfileStore from "@rbxts/profile-store";
+import { PlotParameters } from "./shared_modules/placement_client/objects/plot";
+import { PlotType } from "./shared_modules/placement_client/objects/plot/plot_typeg";
 
-interface ClientToServerEvents {
-	Building: {
-		Place(): void;
-	};
+interface ClientToServerEvents {}
+
+interface ServerToClientEvents {}
+
+interface ClientToServerFunctions {
+	CreatePlot(Params: PlotParameters): PlotType;
 }
-
-interface ServerToClientEvents {
-	Data: {
-		ProfileLoaded(player: Player): void;
-	};
-}
-
-interface ClientToServerFunctions {}
 
 interface ServerToClientFunctions {}
 

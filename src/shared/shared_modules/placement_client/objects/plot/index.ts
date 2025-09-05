@@ -1,6 +1,8 @@
 import ProfileStore, { DataStoreState } from "@rbxts/profile-store";
 import { Data } from "shared/shared_modules/data";
 import { Template } from "shared/shared_modules/data/template";
+import { PlotType } from "./plot_typeg";
+import { Workspace } from "@rbxts/services";
 
 const data_service = new Data();
 
@@ -36,18 +38,21 @@ function create_from_vector2(size: Vector2, pos: Vector3) {
 
 	plot.Size = new Vector3(size.X, 1, size.Y);
 	plot.Position = pos;
+	plot.Parent = Workspace;
 
 	return plot;
 }
 
-export class Plot {
+export class Plot implements PlotType {
 	player: Player;
 	plot: Part;
 	id: number;
 
 	constructor(Player: Player, Parameters: PlotParameters) {
+		print("creating plot...");
 		this.player = Player;
 		this.id = Parameters.id;
+		print(this.player, Parameters);
 
 		if (Parameters.Reference) {
 			this.plot = create_from_reference(Parameters.Reference);
@@ -57,16 +62,20 @@ export class Plot {
 			throw error("Plot Parameteres was wrongly defined!", 1);
 		}
 
-		data_service.LoadPlayerProfileGlobal(this.player).andThen((profile: ProfileStore.Profile<Template>) => {
-			const data = profile.Data;
-			const plot = data.Plots[this.id];
-			if ((plot && Parameters.override) || !plot) {
-				data.Plots[this.id] = {
-					Furniture: [],
-				};
-			}
-		});
-
+		print("created, doing some data...");
+		data_service
+			.LoadPlayerProfileGlobal(this.player)
+			.andThen((profile: ProfileStore.Profile<Template>) => {
+				const data = profile.Data;
+				const plot = data.Plots[this.id];
+				if ((plot && Parameters.override) || !plot) {
+					data.Plots[this.id] = {
+						Furniture: [],
+					};
+				}
+			})
+			.await();
+		print("ok all done returning!");
 		return this;
 	}
 }
